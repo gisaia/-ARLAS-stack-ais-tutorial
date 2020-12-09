@@ -25,7 +25,7 @@
             "Trail_geom": {
                 "type": "geo_shape"
             },
-            "Ship_Type": {
+            "Ship_type": {
                 "type": "keyword",
                 "copy_to": [
                     "internal.fulltext",

@@ -25,7 +25,7 @@ Let's explore some boats position data, provided by __Danish Maritime Authority_
 
 We built a subset named `ais_data.csv`. It contains around 162192 boats positions described with 28 columns.
 
-Some example:
+Example of some columns:
 - Timestamp: Moment when the position is emitted
 - MMSI: Identifier of the boats emitter
 - Name: Name of the boat
@@ -39,7 +39,6 @@ A line of the csv file looks like:
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 |20/11/2019 06:45:09|Class A|240305000|55.931783|17.345067|Under way using engine|0.0|10.5|257.0|259|9288710|SYEF|DELTA CAPTAIN|Tanker|""|44|249|GPS|10.0|FOR ORDERS|22/11/2019 06:00:00|AIS|216|33|22|22|"LINESTRING(17.345067 55.931783, 17.345067 55.931783)"|POINT(17.345067 55.931783)
 
-... 
 ## Exploring AIS data
 
 We will explore this data using ARLAS.
@@ -106,16 +105,16 @@ __2. Indexing AIS data in Elasticsearch__
     - We need Logstash as a data processing pipeline that ingests data in Elasticsearch. So we will download it and untar it:
 
         ```shell
-        ( wget https://artifacts.elastic.co/downloads/logstash/logstash-7.4.2.tar.gz ; tar -xzf logstash-7.4.2.tar.gz )
+        ( curl -O https://artifacts.elastic.co/downloads/logstash/logstash-7.4.2.tar.gz ; tar -xzf logstash-7.4.2.tar.gz )
         ```
     - Now we can index the data:
 
         ```shell
-        cat ais_data.csv \
+        cat ./data/ais_data.csv \
         | ./logstash-7.4.2/bin/logstash \
         -f configs/ais2es.logstash.conf
         ```
-    - Check if __****__ AIS positions are indexed:
+    - Check if __162186__ AIS positions are indexed:
 
         ```shell
         curl -XGET http://localhost:9200/ais_index/_count?pretty
@@ -150,14 +149,15 @@ ARLAS stack is up and running and we have ais potistion data available for explo
 - a search bar to look for boats by their names for instance
 - some widgets to analyse the data from another axis such as the speed distribution.
 
-To do so, let's go to ARLAS-wui-hub at http://localhost:8094 and create a new dashboard named `AIS dashboard`
+To do so, let's go to ARLAS-wui-hub at http://localhost:8094 and create a new dashboard named `Boats dashboard`
 
-<p align="center">
-    <img src="./images/create_dashboard.png" width="70%">
+<p style="text-align:center">
+    <img src="./images/0_ais_create_dashboard.png" width="70%">
 </p>
-<p align="center" style="font-style: italic;">
+<p style="text-align:center;font-style: italic;">
 figure 0: Creation of a dashboard in ARLAS-wui-hub
 </p>
+<br />
 
 After clicking on __Create__, you are automatically redirected to ARLAS-wui-builder to start configuring your dashboard.
 
@@ -165,25 +165,81 @@ After clicking on __Create__, you are automatically redirected to ARLAS-wui-buil
 
 The first thing we need to do is to tell ARLAS which collection of data we want to use to create our dashboard
 
-<p align="center">
-    <img src="./images/choose_collection.png" width="70%">
+<p style="text-align:center">
+    <img src="./images/1_ais_choose_collection.png" width="70%">
 </p>
-<p align="center" style="font-style: italic;">
+<p style="text-align:center;font-style: italic;">
 figure 1: Choose collection
 </p>
+<br />
 
 in our case we choose the `ais_collection`
 
 ### Map configuration
 
-As a first step, I'll set the map at zoom level 7 and the map's center coordinates at Latitude=44° and Longitude=4°. This way, when loading my dashboard in ARLAS-wui, the map will be positionned over Danmark.
+As a first step, I'll set the map at zoom level 13 and the map's center coordinates at Latitude=57,451545 and Longitude=10,787131. This way, when loading my dashboard in ARLAS-wui, the map will be positionned over Danmark.
 
-<p align="center">
-    <img src="./images/global_map.png" width="70%">
+<p style="text-align:center">
+    <img src="./images/2_ais_global_map.png" width="70%">
 </p>
-<p align="center" style="font-style: italic;">
+<p style="text-align:center;font-style: italic;">
 figure 2: Map initialisation
 </p>
+<br />
+
+For now, the map is empty. The first thing we want to find out is where the boats are ?
+
+<p style="text-align:center">
+    <img src="./images/3_ais_layer_view.png" width="70%">
+</p>
+<p style="text-align:center;font-style: italic;">
+figure 3: Layer view
+</p>
+<br />
+
+To do so, let's add a layer named `Boats` to visualise the boats positions.
+In the Geometry section, choose the `Point_geom` features geo-field
+
+<p style="text-align:center">
+    <img src="./images/4_ais_geometric_features_geom.png" width="70%">
+</p>
+<p style="text-align:center;font-style: italic;">
+figure 4: Adding a Gemetric features layer named 'Boats'
+</p>
+<br />
+
+Now, let's define the layer's style. As a starter, we choose the best representation of our geometries: Boats positions are points. We also choose a fixed color (green for instance) and a fixed radius of 5 pixels
+
+<p style="text-align:center">
+    <img src="./images/5_ais_geometric_features_style.png" width="70%">
+</p>
+<p style="text-align:center;font-style: italic;">
+figure 5: Customising 'Boats' style
+</p>
+<br />
+
+After clicking on Validate, our first layer is created
+
+<p style="text-align:center">
+    <img src="./images/6_ais_boats_layer.png" width="70%">
+</p>
+<p style="text-align:center;font-style: italic;">
+figure 6:  New layer 'Boats' is created
+</p>
+<br />
+
+We can go and preview the layer in Preview tab
+
+<p style="text-align:center">
+    <img src="./images/7_ais_boats_layer_preview.png" width="70%">
+</p>
+<p style="text-align:center;font-style: italic;">
+figure 7:  Preview of 'Boats' layer
+</p>
+<br />
+
+We see now where the boats are passing by thanks to this layer
+
 
 ...
 ...
