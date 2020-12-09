@@ -151,10 +151,10 @@ ARLAS stack is up and running and we have ais potistion data available for explo
 
 To do so, let's go to ARLAS-wui-hub at http://localhost:8094 and create a new dashboard named `Boats dashboard`
 
-<p style="text-align:center">
+<p align="center">
     <img src="./images/0_ais_create_dashboard.png" width="70%">
 </p>
-<p style="text-align:center;font-style: italic;">
+<p align="center" style="font-style: italic;" >
 figure 0: Creation of a dashboard in ARLAS-wui-hub
 </p>
 <br />
@@ -165,10 +165,10 @@ After clicking on __Create__, you are automatically redirected to ARLAS-wui-buil
 
 The first thing we need to do is to tell ARLAS which collection of data we want to use to create our dashboard
 
-<p style="text-align:center">
+<p align="center">
     <img src="./images/1_ais_choose_collection.png" width="70%">
 </p>
-<p style="text-align:center;font-style: italic;">
+<p align="center" style="font-style: italic;" >
 figure 1: Choose collection
 </p>
 <br />
@@ -179,20 +179,20 @@ in our case we choose the `ais_collection`
 
 As a first step, I'll set the map at zoom level 13 and the map's center coordinates at Latitude=57,451545 and Longitude=10,787131. This way, when loading my dashboard in ARLAS-wui, the map will be positionned over Danmark.
 
-<p style="text-align:center">
+<p align="center">
     <img src="./images/2_ais_global_map.png" width="70%">
 </p>
-<p style="text-align:center;font-style: italic;">
+<p align="center" style="font-style: italic;" >
 figure 2: Map initialisation
 </p>
 <br />
 
 For now, the map is empty. The first thing we want to find out is where the boats are ?
 
-<p style="text-align:center">
+<p align="center">
     <img src="./images/3_ais_layer_view.png" width="70%">
 </p>
-<p style="text-align:center;font-style: italic;">
+<p align="center" style="font-style: italic;" >
 figure 3: Layer view
 </p>
 <br />
@@ -200,40 +200,40 @@ figure 3: Layer view
 To do so, let's add a layer named `Boats` to visualise the boats positions.
 In the Geometry section, choose the `Point_geom` features geo-field
 
-<p style="text-align:center">
+<p align="center">
     <img src="./images/4_ais_geometric_features_geom.png" width="70%">
 </p>
-<p style="text-align:center;font-style: italic;">
+<p align="center" style="font-style: italic;" >
 figure 4: Adding a Gemetric features layer named 'Boats'
 </p>
 <br />
 
 Now, let's define the layer's style. As a starter, we choose the best representation of our geometries: Boats positions are points. We also choose a fixed color (green for instance) and a fixed radius of 5 pixels
 
-<p style="text-align:center">
+<p align="center">
     <img src="./images/5_ais_geometric_features_style.png" width="70%">
 </p>
-<p style="text-align:center;font-style: italic;">
+<p align="center" style="font-style: italic;" >
 figure 5: Customising 'Boats' style
 </p>
 <br />
 
 After clicking on Validate, our first layer is created
 
-<p style="text-align:center">
+<p align="center">
     <img src="./images/6_ais_boats_layer.png" width="70%">
 </p>
-<p style="text-align:center;font-style: italic;">
+<p align="center" style="font-style: italic;" >
 figure 6:  New layer 'Boats' is created
 </p>
 <br />
 
 We can go and preview the layer in Preview tab
 
-<p style="text-align:center">
+<p align="center">
     <img src="./images/7_ais_boats_layer_preview.png" width="70%">
 </p>
-<p style="text-align:center;font-style: italic;">
+<p align="center" style="font-style: italic;" >
 figure 7:  Preview of 'Boats' layer
 </p>
 <br />
