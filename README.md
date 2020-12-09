@@ -19,6 +19,26 @@ You will need :
 
 ## AIS data
 
+
+
+Let's explore some boats position data, provided by __Danish Maritime Authority__.
+
+We built a subset named `ais_data.csv`. It contains around 162192 boats positions described with 28 columns.
+
+Some example:
+- Timestamp: Moment when the position is emitted
+- MMSI: Identifier of the boats emitter
+- Name: Name of the boat
+- Ship_type: Type of the boat
+- Trail_geom: Linestring between the current position of the boat and the next one
+- Point_geom : Current position of the boat
+
+A line of the csv file looks like:
+
+|Timestamp|Type_of_mobile|MMSI|Latitude|Longitude|Navigational status|ROT|SOG|COG|Heading|IMO|Callsign|Name|Ship type|Cargo type|Width|Length|Type of position fixing device|Draught|Destination|ETA|Data source type|A|B|C|D|Trail geom|Point geom|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+|20/11/2019 06:45:09|Class A|240305000|55.931783|17.345067|Under way using engine|0.0|10.5|257.0|259|9288710|SYEF|DELTA CAPTAIN|Tanker|""|44|249|GPS|10.0|FOR ORDERS|22/11/2019 06:00:00|AIS|216|33|22|22|"LINESTRING(17.345067 55.931783, 17.345067 55.931783)"|POINT(17.345067 55.931783)
+
 ... 
 ## Exploring AIS data
 
@@ -82,7 +102,7 @@ __2. Indexing AIS data in Elasticsearch__
     curl -XGET http://localhost:9200/ais_index/_mapping?pretty
     ```
 
-- Index data in `aisg_data.csv` in Elasticsearch
+- Index data in `ais_data.csv` in Elasticsearch
     - We need Logstash as a data processing pipeline that ingests data in Elasticsearch. So we will download it and untar it:
 
         ```shell

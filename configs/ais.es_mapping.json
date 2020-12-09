@@ -1,0 +1,74 @@
+{
+    "mappings": {
+        "properties": {
+            "id": {
+                "type":"keyword",
+                "copy_to": [
+                    "internal.fulltext",
+                    "internal.autocomplete"
+                ]
+            },
+            "MMSI": {
+                "type": "keyword",
+                "copy_to": [
+                    "internal.fulltext",
+                    "internal.autocomplete"
+                ]
+            },
+            "Point_geom": {
+                "type": "geo_point"
+            },
+            "Timestamp": {
+                "type": "date",
+                "format": "dd/MM/yyyy HH:mm:ss"
+            },
+            "Trail_geom": {
+                "type": "geo_shape"
+            },
+            "Ship_Type": {
+                "type": "keyword",
+                "copy_to": [
+                    "internal.fulltext",
+                    "internal.autocomplete"
+                ]
+            },
+            "Name": {
+                "type": "keyword",
+                "copy_to": [
+                    "internal.fulltext",
+                    "internal.autocomplete"
+                ]
+            },
+            "SOG": {
+                "type": "float"
+            },
+            "Heading": {
+                "type": "float"
+            },
+            "Destination": {
+                "type": "keyword",
+                "copy_to": [
+                    "internal.fulltext",
+                    "internal.autocomplete"
+                ]
+            },
+            "Width": {
+                "type": "float"
+            },
+            "Length": {
+                "type": "float"
+            },
+            "internal": {
+                "properties": {
+                    "fulltext": {
+                        "type": "text"
+                    },
+                    "autocomplete": {
+                        "type": "keyword"
+                    }
+                }
+            }
+        },
+        "dynamic": false
+    }
+}
