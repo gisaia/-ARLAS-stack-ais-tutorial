@@ -453,7 +453,7 @@ Let's see what does the heading distribution of these positions looks like.
 
 To do so we need to create a histogram. ARLAS proposes to organise all the histograms and other widgets in an analytics board.
 
-We can split the analytics board into tabs. Let's create a tab called 'Tracking' where will add our Speed distribution histogram
+We can split the analytics board into tabs. Let's create a tab called 'Tracking' where will add our Heading distribution histogram
 <p align="center">
     <img src="./images/24_ais_tracking_tab.png" width="70%">
 </p>
