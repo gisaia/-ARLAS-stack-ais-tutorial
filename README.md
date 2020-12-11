@@ -14,8 +14,17 @@ You will need :
 - docker & docker-compose
 - curl
 
+<br />
+
 ### What will you get ?
 
+<br />
+<p align="center">
+    <img src="./images/29_ais_arlas_wui_widget.png" width="70%">
+</p>
+<p align="center" style="font-style: italic;" >
+ Exploration app created in this tutorial
+</p>
 
 ## AIS data
 
@@ -23,21 +32,21 @@ You will need :
 
 Let's explore some boats position data, provided by __Danish Maritime Authority__.
 
+This tutorial is based on AIS data from 11/20/2019 to 11/27/2019 on which we have extract some boats based on MMSI
+
 We built a subset named `ais_data.csv`. It contains around 162192 boats positions described with 28 columns.
 
 Example of some columns:
 - Timestamp: Moment when the position is emitted
 - MMSI: Identifier of the boats emitter
 - Name: Name of the boat
-- Ship_type: Type of the boat
-- Trail_geom: Linestring between the current position of the boat and the next one
-- Point_geom : Current position of the boat
+- Ship type: Type of the boat
 
 A line of the csv file looks like:
 
-|Timestamp|Type_of_mobile|MMSI|Latitude|Longitude|Navigational status|ROT|SOG|COG|Heading|IMO|Callsign|Name|Ship type|Cargo type|Width|Length|Type of position fixing device|Draught|Destination|ETA|Data source type|A|B|C|D|Trail geom|Point geom|
+|Timestamp|Type of mobile|MMSI|Latitude|Longitude|Navigational status|ROT|SOG|COG|Heading|IMO|Callsign|Name|Ship type|Cargo type|Width|Length|Type of position fixing device|Draught|Destination|ETA|Data source type|A|B|C|D|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-|20/11/2019 06:45:09|Class A|240305000|55.931783|17.345067|Under way using engine|0.0|10.5|257.0|259|9288710|SYEF|DELTA CAPTAIN|Tanker|""|44|249|GPS|10.0|FOR ORDERS|22/11/2019 06:00:00|AIS|216|33|22|22|"LINESTRING(17.345067 55.931783, 17.345067 55.931783)"|POINT(17.345067 55.931783)
+|20/11/2019 06:45:09|Class A|240305000|55.931783|17.345067|Under way using engine|0.0|10.5|257.0|259|9288710|SYEF|DELTA CAPTAIN|Tanker|""|44|249|GPS|10.0|FOR ORDERS|22/11/2019 06:00:00|AIS|216|33|22|22|
 
 ## Exploring AIS data
 
@@ -198,7 +207,7 @@ figure 3: Layer view
 <br />
 
 To do so, let's add a layer named `Boats` to visualise the boats positions.
-In the Geometry section, choose the `Point_geom` features geo-field
+In the Geometry section, choose the `location` features geo-field
 
 <p align="center">
     <img src="./images/4_ais_geometric_features_geom.png" width="70%">
@@ -329,7 +338,7 @@ figure 13:  Edit a layer
 <br />
 
 
-In the Style section, we choose Generated colors option that will automatically generates a hex color from the chosen field values. For our case, we choose `Ship_type` field
+In the Style section, we choose Generated colors option that will automatically generates a hex color from the chosen field values. For our case, we choose `Ship type` field
 <p align="center">
     <img src="./images/14_ais_edit_layer_boats_style.png" width="70%">
 </p>
@@ -422,7 +431,7 @@ figure 21: Creating a geographical distribution layer
 </p>
 <br />
 
-We choose to aggregate `Point_geom` geo-field to a geographical grid and we choose a fine granularity for this grid.
+We choose to aggregate `location` geo-field to a geographical grid and we choose a fine granularity for this grid.
 
 We will display on the map the grid's cells.
 

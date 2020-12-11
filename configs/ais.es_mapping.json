@@ -15,17 +15,14 @@
                     "internal.autocomplete"
                 ]
             },
-            "Point_geom": {
+            "location": {
                 "type": "geo_point"
             },
             "Timestamp": {
                 "type": "date",
                 "format": "dd/MM/yyyy HH:mm:ss"
             },
-            "Trail_geom": {
-                "type": "geo_shape"
-            },
-            "Ship_type": {
+            "Ship type": {
                 "type": "keyword",
                 "copy_to": [
                     "internal.fulltext",

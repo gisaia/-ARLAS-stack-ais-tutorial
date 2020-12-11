@@ -2,6 +2,6 @@
     "index_name": "ais_index",
     "id_path": "id",
     "timestamp_path": "Timestamp",
-    "centroid_path": "Point_geom",
-    "geometry_path": "Trail_geom"
+    "centroid_path": "location",
+    "geometry_path": "location"
 }
