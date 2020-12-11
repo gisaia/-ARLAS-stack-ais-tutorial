@@ -34,7 +34,7 @@ Let's explore some boats position data, provided by __Danish Maritime Authority_
 
 This tutorial is based on AIS data from 11/20/2019 to 11/27/2019 on which we have extract some boats based on MMSI
 
-We built a subset named `ais_data.csv`. It contains around 162192 boats positions described with 28 columns.
+We built a subset named `ais_data.csv`. It contains around 162192 boats positions described with 26 columns.
 
 Example of some columns:
 - Timestamp: Moment when the position is emitted
@@ -45,7 +45,7 @@ Example of some columns:
 A line of the csv file looks like:
 
 |Timestamp|Type of mobile|MMSI|Latitude|Longitude|Navigational status|ROT|SOG|COG|Heading|IMO|Callsign|Name|Ship type|Cargo type|Width|Length|Type of position fixing device|Draught|Destination|ETA|Data source type|A|B|C|D|
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 |20/11/2019 06:45:09|Class A|240305000|55.931783|17.345067|Under way using engine|0.0|10.5|257.0|259|9288710|SYEF|DELTA CAPTAIN|Tanker|""|44|249|GPS|10.0|FOR ORDERS|22/11/2019 06:00:00|AIS|216|33|22|22|
 
 ## Exploring AIS data
@@ -123,7 +123,7 @@ __2. Indexing AIS data in Elasticsearch__
         | ./logstash-7.4.2/bin/logstash \
         -f configs/ais2es.logstash.conf
         ```
-    - Check if __162186__ AIS positions are indexed:
+    - Check if __162189__ AIS positions are indexed:
 
         ```shell
         curl -XGET http://localhost:9200/ais_index/_count?pretty
