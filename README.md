@@ -32,7 +32,7 @@ You will need :
 
 Let's explore some boats position data, provided by __Danish Maritime Authority__.
 
-This tutorial is based on AIS data from 11/20/2019 to 11/27/2019 on which we have extract some boats based on follwing MMSI : 
+This tutorial is based on AIS data from 11/20/2019 to 11/27/2019 on which we have extract some boats based on following MMSI : 
  - 257653000
  - 265177000
  - 220051000
@@ -56,45 +56,48 @@ A line of the csv file looks like:
 
 We will explore this data using ARLAS.
 
-__0. Download this tutorial__
+__0. Setup__
 
-```shell
-git clone https://github.com/gisaia/ARLAS-stack-ais-tutorial.git
-```
+- Create a repository dedicated to this tutorial
+
+    ```shell
+    mkdir ARLAS-stack-ais-tutorial
+    cd ARLAS-stack-ais-tutorial
+
+    ```
+
+- Download the AIS position data
+
+    ```shell
+    curl -O -L https://github.com/gisaia/ARLAS-stack-ais-tutorial/raw/develop/data/ais_data.csv
+
+    ```
+
+- Check that `ais_data.csv` file is downloaded
+
+    ```
+    ls -l ais_data.csv
+    ```
+
+- Download last version of Exploration stack ans unzip it
+
+    ```shell
+    (curl -O -L https://github.com/gisaia/ARLAS-Exploration-stack/archive/develop.zip; unzip develop.zip)
+
+    ```
+
+- Check that the stack is downloaded
+
+    ```
+    ls -l ARLAS-Exploration-stack-develop
+    ```
 
 __1. Starting ARLAS Exploration Stack__
 
-- Get the docker-compose file from [ARLAS-Exploration-stack](https://github.com/gisaia/ARLAS-Exploration-stack.git) that will allow us to start the ARLAS stack
-
-```shell
-curl -XGET \
-    "https://raw.githubusercontent.com/gisaia/ARLAS-Exploration-stack/develop/docker-compose-withoutnginx.yaml" \
-    -o docker-compose.yaml
-
-```
-
 - Start the ARLAS stack
     ```shell
-    docker-compose up -d \
-        arlas-wui \
-        arlas-hub \
-        arlas-builder \
-        arlas-server \
-        arlas-persistence-server \
-        elasticsearch
-    ```
-    6 services are started:
-    - ARLAS-wui at http://localhost:8096
-    - ARLAS-wui-builder at http://localhost:8095
-    - ARLAS-wui-hub at http://localhost:8094
-    - ARLAS-server at http://localhost:19999/arlas/swagger
-    - ARLAS-persistence at http://localhost:19997/arlas-persistence-server/swagger
-    - Elasticsearch at http://localhost:9200
+    ./ARLAS-Exploration-stack-develop/start.sh
 
-    Check that the 6 are up and running using the following command:
-
-    ```shell
-    docker ps
     ```
 
 __2. Indexing AIS data in Elasticsearch__
@@ -102,8 +105,9 @@ __2. Indexing AIS data in Elasticsearch__
 - Create `ais_index` index in Elasticsearch with `configs/ais.es_mapping.json` mapping file
 
     ```shell
+    curl https://raw.githubusercontent.com/gisaia/ARLAS-stack-ais-tutorial/develop/configs/ais.es_mapping.json |
     curl -XPUT http://localhost:9200/ais_index/?pretty \
-    -d @configs/ais.es_mapping.json \
+    -d @- \
     -H 'Content-Type: application/json'
 
     ```
@@ -112,6 +116,7 @@ __2. Indexing AIS data in Elasticsearch__
 
     ```shell
     curl -XGET http://localhost:9200/ais_index/_mapping?pretty
+
     ```
 
 - Index data in `ais_data.csv` in Elasticsearch
@@ -119,18 +124,27 @@ __2. Indexing AIS data in Elasticsearch__
 
         ```shell
         ( curl -O https://artifacts.elastic.co/downloads/logstash/logstash-7.4.2.tar.gz ; tar -xzf logstash-7.4.2.tar.gz )
+
         ```
+    - Logstash needs a configuration file (`ais2es.logstash.conf`) that indicates how to transform data from the CSV file and index it in Elasticsearch.
+
+        ```shell
+        curl https://raw.githubusercontent.com/gisaia/ARLAS-stack-ais-tutorial/develop/configs/ais2es.logstash.conf -o ais2es.logstash.conf
+
+        ```
+    
     - Now we can index the data:
 
         ```shell
-        cat ./data/ais_data.csv \
-        | ./logstash-7.4.2/bin/logstash \
-        -f configs/ais2es.logstash.conf
+        cat ais_data.csv \
+        | ./logstash-7.4.2/bin/logstash -f ais2es.logstash.conf
+
         ```
     - Check if __162189__ AIS positions are indexed:
 
         ```shell
         curl -XGET http://localhost:9200/ais_index/_count?pretty
+
         ```
 __3. Declaring `ais_index` in ARLAS__
 
@@ -142,27 +156,29 @@ The collection references an identifier, a timestamp, and geographical fields wh
 - Create a AIS collection in ARLAS
 
     ```shell
-    curl -X PUT \
-    --header 'Content-Type: application/json;charset=utf-8' \
-    --header 'Accept: application/json' \
-    "http://localhost:19999/arlas/collections/ais_collection?pretty=true" \
-    --data @ais_collection.json
-    ```
-
-    Check that the collection is created using the ARLAS-server `collections/{collection}`
+        curl "https://raw.githubusercontent.com/gisaia/ARLAS-stack-ais-tutorial/develop/ais_collection.json" | curl -X PUT \
+        --header 'Content-Type: application/json;charset=utf-8' \
+        --header 'Accept: application/json' \
+        "http://localhost:81/server/collections/ais_collection?pretty=true" \
+        --data @-
 
     ```
-    curl -X GET "http://localhost:19999/arlas/collections/ais_collection?pretty=true"
+
+- Check that the collection is created using the ARLAS-server `collections/{collection}`
+
+    ```
+    curl -X GET "http://localhost:81/server/collections/ais_collection?pretty=true"
+
     ```
 __4. Create a dashbord to explore `AIS data` with ARLAS__
 
-ARLAS stack is up and running and we have ais potistion data available for exploration. We can now create our first dashboard composed of
+ARLAS stack is up and running and we have ais position data available for exploration. We can now create our first dashboard composed of
 - a map to observe the boats positions' geographical distribution
 - a timeline presenting the number of boats positions over time
 - a search bar to look for boats by their names for instance
 - some widgets to analyse the data from another axis such as the speed distribution.
 
-To do so, let's go to [ARLAS-wui-hub](http://localhost:8094) and create a new dashboard named `Boats dashboard`
+To do so, let's go to [ARLAS-wui-hub](http://localhost:81/hub) and create a new dashboard named `Boats dashboard`
 
 <p align="center">
     <img src="./images/0_ais_create_dashboard.png" width="70%">
@@ -319,7 +335,7 @@ figure 11:  List of created dashboards
 </p>
 <br />
 
-We can now __View__ it in [ARLAS-wui](http://localhost:8096/)
+We can now __View__ it in [ARLAS-wui](http://localhost:81/wui)
 <p align="center">
     <img src="./images/12_ais_arlas_wui.png" width="70%">
 </p>
