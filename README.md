@@ -32,7 +32,7 @@ You will need :
 
 Let's explore some boats position data, provided by __Danish Maritime Authority__.
 
-This tutorial is based on AIS data from 11/20/2019 to 11/27/2019 on which we have extract some boats based on following MMSI : 
+This tutorial is based on AIS data emitted from 11/20/2019 to 11/27/2019. We extracted boats positions having the following MMSI :
  - 257653000
  - 265177000
  - 220051000
@@ -45,13 +45,13 @@ First, download all the data you need on the [Danish Maritime Authority FTP](ftp
 curl -O ftp://ftp.ais.dk/ais_data/aisdk_20191120.csv
 
 ```
-And extract only desire MMSI :
+And extract only desired MMSI :
 
 ```shell
 cat aisdk_20191120.csv | grep -E "257653000|265177000|220051000|240305000" > ais_data.csv
 
 ```
-If you don't want to create your custom extract you can use the one we provide.
+If you don't want to create your custom extract you can use the one we provide. ( view <a href="#user-content-exploring-ais-data" >Setup</a> section).
 
 We built a subset named `ais_data.csv`. It contains around 162192 boats positions described with 26 columns.
 
@@ -81,7 +81,7 @@ __0. Setup__
 
     ```
 
-- Download the AIS position data
+-  If you didn't download and extract data from ftp server, you can download this csv file we provide :
 
     ```shell
     curl -O -L https://github.com/gisaia/ARLAS-stack-ais-tutorial/raw/develop/data/ais_data.csv
