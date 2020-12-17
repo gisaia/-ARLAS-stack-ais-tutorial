@@ -38,6 +38,21 @@ This tutorial is based on AIS data from 11/20/2019 to 11/27/2019 on which we hav
  - 220051000
  - 240305000
 
+First, download all the data you need on the [Danish Maritime Authority FTP](ftp://ftp.ais.dk/ais_data) :
+
+```shell
+# Example for the 11/20/2019
+curl -O ftp://ftp.ais.dk/ais_data/aisdk_20191120.csv
+
+```
+And extract only desire MMSI :
+
+```shell
+cat aisdk_20191120.csv | grep -E "257653000|265177000|220051000|240305000" > ais_data.csv
+
+```
+If you don't want to create your custom extract you can use the one we provide.
+
 We built a subset named `ais_data.csv`. It contains around 162192 boats positions described with 26 columns.
 
 Example of some columns:
