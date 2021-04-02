@@ -3,6 +3,7 @@
 ## About this tutorial
 ### What will you learn ?
 With this tutorial, you'll be able to:
+
 - start an ARLAS-Exploration stack
 - Index some AIS data in Elasticsearch
 - Reference the indexed AIS data in ARLAS
@@ -11,6 +12,7 @@ With this tutorial, you'll be able to:
 ### What will you need ?
 
 You will need :
+
 - docker & docker-compose
 - curl
 
@@ -20,7 +22,7 @@ You will need :
 
 <br />
 <p align="center">
-    <img src="./images/29_ais_arlas_wui_widget.png" width="70%">
+    <img src="./images/29_ais_arlas_wui_widget.png" width="100%">
 </p>
 <p align="center" style="font-style: italic;" >
  Exploration app created in this tutorial
@@ -33,6 +35,7 @@ You will need :
 Let's explore some boats position data, provided by __Danish Maritime Authority__.
 
 This tutorial is based on AIS data emitted from 11/20/2019 to 11/27/2019. We extracted boats positions having the following MMSI :
+
  - 257653000
  - 265177000
  - 220051000
@@ -56,6 +59,7 @@ If you don't want to create your custom extract you can use the one we provide. 
 We built a subset named `ais_data.csv`. It contains around 162192 boats positions described with 26 columns.
 
 Example of some columns:
+
 - Timestamp: Moment when the position is emitted
 - MMSI: Identifier of the boats emitter
 - Name: Name of the boat
@@ -75,92 +79,95 @@ __0. Setup__
 
 - Create a repository dedicated to this tutorial
 
-    ```shell
-    mkdir ARLAS-stack-ais-tutorial
-    cd ARLAS-stack-ais-tutorial
+```shell
+mkdir ARLAS-stack-ais-tutorial
+cd ARLAS-stack-ais-tutorial
 
-    ```
+```
 
 -  If you didn't download and extract data from ftp server, you can download this csv file we provide :
 
-    ```shell
-    curl -O -L https://github.com/gisaia/ARLAS-stack-ais-tutorial/raw/develop/data/ais_data.csv
+```shell
+curl -O -L https://github.com/gisaia/ARLAS-stack-ais-tutorial/raw/develop/data/ais_data.csv
 
-    ```
+```
 
 - Check that `ais_data.csv` file is downloaded
 
-    ```
-    ls -l ais_data.csv
-    ```
+```
+ls -l ais_data.csv
+```
 
 - Download last version of Exploration stack ans unzip it
 
-    ```shell
-    (curl -O -L https://github.com/gisaia/ARLAS-Exploration-stack/archive/develop.zip; unzip develop.zip)
+```shell
+(curl -O -L https://github.com/gisaia/ARLAS-Exploration-stack/archive/develop.zip; unzip develop.zip)
 
-    ```
+```
 
 - Check that the stack is downloaded
 
-    ```
-    ls -l ARLAS-Exploration-stack-develop
-    ```
+```
+ls -l ARLAS-Exploration-stack-develop
+```
 
 __1. Starting ARLAS Exploration Stack__
 
 - Start the ARLAS stack
-    ```shell
-    ./ARLAS-Exploration-stack-develop/start.sh
 
-    ```
+```shell
+./ARLAS-Exploration-stack-develop/start.sh
+
+```
 
 __2. Indexing AIS data in Elasticsearch__
 
 - Create `ais_index` index in Elasticsearch with `configs/ais.es_mapping.json` mapping file
 
-    ```shell
-    curl https://raw.githubusercontent.com/gisaia/ARLAS-stack-ais-tutorial/develop/configs/ais.es_mapping.json |
-    curl -XPUT http://localhost:9200/ais_index/?pretty \
-    -d @- \
-    -H 'Content-Type: application/json'
+```shell
+curl https://raw.githubusercontent.com/gisaia/ARLAS-stack-ais-tutorial/develop/configs/ais.es_mapping.json |
+curl -XPUT http://localhost:9200/ais_index/?pretty \
+-d @- \
+-H 'Content-Type: application/json'
 
-    ```
+```
 
-    You can check that the index is successfuly created by running the following command
+You can check that the index is successfuly created by running the following command
 
-    ```shell
-    curl -XGET http://localhost:9200/ais_index/_mapping?pretty
+```shell
+curl -XGET http://localhost:9200/ais_index/_mapping?pretty
 
-    ```
+```
 
-- Index data in `ais_data.csv` in Elasticsearch
-    - We need Logstash as a data processing pipeline that ingests data in Elasticsearch. So we will download it and untar it:
+- Index data in `ais_data.csv` in Elasticsearch. For that, we need Logstash as a data processing pipeline that ingests data in Elasticsearch. So we will download it and untar it:
 
-        ```shell
-        ( curl -O https://artifacts.elastic.co/downloads/logstash/logstash-7.4.2.tar.gz ; tar -xzf logstash-7.4.2.tar.gz )
+```shell
+( curl -O https://artifacts.elastic.co/downloads/logstash/logstash-7.4.2.tar.gz ; tar -xzf logstash-7.4.2.tar.gz )
 
-        ```
-    - Logstash needs a configuration file (`ais2es.logstash.conf`) that indicates how to transform data from the CSV file and index it in Elasticsearch.
+```
 
-        ```shell
-        curl https://raw.githubusercontent.com/gisaia/ARLAS-stack-ais-tutorial/develop/configs/ais2es.logstash.conf -o ais2es.logstash.conf
+- Logstash needs a configuration file (`ais2es.logstash.conf`) that indicates how to transform data from the CSV file and index it in Elasticsearch.
 
-        ```
+```shell
+curl https://raw.githubusercontent.com/gisaia/ARLAS-stack-ais-tutorial/develop/configs/ais2es.logstash.conf -o ais2es.logstash.conf
+
+```
     
-    - Now we can index the data:
+- Now we can index the data:
 
-        ```shell
-        cat ais_data.csv \
-        | ./logstash-7.4.2/bin/logstash -f ais2es.logstash.conf
+```shell
+cat ais_data.csv \
+| ./logstash-7.4.2/bin/logstash -f ais2es.logstash.conf
 
-        ```
-    - Check if __162189__ AIS positions are indexed:
+```
 
-        ```shell
-        curl -XGET http://localhost:9200/ais_index/_count?pretty
+- Check if __162189__ AIS positions are indexed:
 
-        ```
+```shell
+curl -XGET http://localhost:9200/ais_index/_count?pretty
+
+```
+
 __3. Declaring `ais_index` in ARLAS__
 
 ARLAS-server interfaces with data indexed in Elasticsearch via a collection reference.
@@ -170,21 +177,22 @@ The collection references an identifier, a timestamp, and geographical fields wh
 
 - Create a AIS collection in ARLAS
 
-    ```shell
-        curl "https://raw.githubusercontent.com/gisaia/ARLAS-stack-ais-tutorial/develop/ais_collection.json" | curl -X PUT \
-        --header 'Content-Type: application/json;charset=utf-8' \
-        --header 'Accept: application/json' \
-        "http://localhost:81/server/collections/ais_collection?pretty=true" \
-        --data @-
+```shell
+    curl "https://raw.githubusercontent.com/gisaia/ARLAS-stack-ais-tutorial/develop/ais_collection.json" | curl -X PUT \
+    --header 'Content-Type: application/json;charset=utf-8' \
+    --header 'Accept: application/json' \
+    "http://localhost:81/server/collections/ais_collection?pretty=true" \
+    --data @-
 
-    ```
+```
 
 - Check that the collection is created using the ARLAS-server `collections/{collection}`
 
-    ```
-    curl -X GET "http://localhost:81/server/collections/ais_collection?pretty=true"
+```
+curl -X GET "http://localhost:81/server/collections/ais_collection?pretty=true"
 
-    ```
+```
+
 __4. Create a dashbord to explore `AIS data` with ARLAS__
 
 ARLAS stack is up and running and we have ais position data available for exploration. We can now create our first dashboard composed of
@@ -196,7 +204,7 @@ ARLAS stack is up and running and we have ais position data available for explor
 To do so, let's go to [ARLAS-wui-hub](http://localhost:81/hub) and create a new dashboard named `Boats dashboard`
 
 <p align="center">
-    <img src="./images/0_ais_create_dashboard.png" width="70%">
+    <img src="./images/0_ais_create_dashboard.png" width="100%">
 </p>
 <p align="center" style="font-style: italic;" >
 figure 0: Creation of a dashboard in ARLAS-wui-hub
@@ -210,7 +218,7 @@ After clicking on __Create__, you are automatically redirected to ARLAS-wui-buil
 The first thing we need to do is to tell ARLAS which collection of data we want to use to create our dashboard
 
 <p align="center">
-    <img src="./images/1_ais_choose_collection.png" width="70%">
+    <img src="./images/1_ais_choose_collection.png" width="100%">
 </p>
 <p align="center" style="font-style: italic;" >
 figure 1: Choose collection
@@ -224,7 +232,7 @@ in our case we choose the `ais_collection`
 As a first step, I'll set the map at zoom level 13 and the map's center coordinates at Latitude=57,451545 and Longitude=10,787131. This way, when loading my dashboard in ARLAS-wui, the map will be positionned over Danmark.
 
 <p align="center">
-    <img src="./images/2_ais_global_map.png" width="70%">
+    <img src="./images/2_ais_global_map.png" width="100%">
 </p>
 <p align="center" style="font-style: italic;" >
 figure 2: Map initialisation
@@ -234,7 +242,7 @@ figure 2: Map initialisation
 For now, the map is empty. The first thing we want to find out is where the boats are ?
 
 <p align="center">
-    <img src="./images/3_ais_layer_view.png" width="70%">
+    <img src="./images/3_ais_layer_view.png" width="100%">
 </p>
 <p align="center" style="font-style: italic;" >
 figure 3: Layer view
@@ -245,7 +253,7 @@ To do so, let's add a layer named `Boats` to visualise the boats positions.
 In the Geometry section, choose the `location` features geo-field
 
 <p align="center">
-    <img src="./images/4_ais_geometric_features_geom.png" width="70%">
+    <img src="./images/4_ais_geometric_features_geom.png" width="100%">
 </p>
 <p align="center" style="font-style: italic;" >
 figure 4: Adding a Gemetric features layer named 'Boats'
@@ -255,7 +263,7 @@ figure 4: Adding a Gemetric features layer named 'Boats'
 Now, let's define the layer's style. As a starter, we choose the best representation of our geometries: Boats positions are points. We also choose a fixed color (green for instance) and a fixed radius of 5 pixels
 
 <p align="center">
-    <img src="./images/5_ais_geometric_features_style.png" width="70%">
+    <img src="./images/5_ais_geometric_features_style.png" width="100%">
 </p>
 <p align="center" style="font-style: italic;" >
 figure 5: Customising 'Boats' style
@@ -265,7 +273,7 @@ figure 5: Customising 'Boats' style
 After clicking on Validate, our first layer is created
 
 <p align="center">
-    <img src="./images/6_ais_boats_layer.png" width="70%">
+    <img src="./images/6_ais_boats_layer.png" width="100%">
 </p>
 <p align="center" style="font-style: italic;" >
 figure 6:  New layer 'Boats' is created
@@ -275,7 +283,7 @@ figure 6:  New layer 'Boats' is created
 We can go and preview the layer in Preview tab
 
 <p align="center">
-    <img src="./images/7_ais_boats_layer_preview.png" width="70%">
+    <img src="./images/7_ais_boats_layer_preview.png" width="100%">
 </p>
 <p align="center" style="font-style: italic;" >
 figure 7:  Preview of 'Boats' layer
@@ -294,7 +302,7 @@ For that, let's define a timeline: a histogram that will represent the number of
 For the x-Axis we choose the timestamp field and for the y-Axis we choose Hits count: the number of positions in each bucket. We set 50 buckets in this example
 
 <p align="center">
-    <img src="./images/8_ais_timeline_data.png" width="70%">
+    <img src="./images/8_ais_timeline_data.png" width="100%">
 </p>
 <p align="center" style="font-style: italic;" >
 figure 8:  Define timeline
@@ -304,7 +312,7 @@ figure 8:  Define timeline
 In the Render tab we can set a title for the timeline, date format and the histogram type.
 
 <p align="center">
-    <img src="./images/9_ais_timeline_render.png" width="70%">
+    <img src="./images/9_ais_timeline_render.png" width="100%">
 </p>
 <p align="center" style="font-style: italic;" >
 figure 9:  Rendering of timeline
@@ -321,7 +329,7 @@ To define the search bar we can set :
  - the field used to autocomplete the searched words
 
 <p align="center">
-    <img src="./images/10_ais_search.png" width="70%">
+    <img src="./images/10_ais_search.png" width="100%">
 </p>
 <p align="center" style="font-style: italic;" >
 figure 10:  Define search bar
@@ -343,7 +351,7 @@ Let's save this dashboard by clicking on the 'Disk' icon at the left-bottom of t
 If we go back to [ARLAS-wui-hub](http://localhost:8094/), we'll find the Boats dashboard created.
 
 <p align="center">
-    <img src="./images/11_ais_dashboard_list.png" width="70%">
+    <img src="./images/11_ais_dashboard_list.png" width="100%">
 </p>
 <p align="center" style="font-style: italic;" >
 figure 11:  List of created dashboards
@@ -352,7 +360,7 @@ figure 11:  List of created dashboards
 
 We can now __View__ it in [ARLAS-wui](http://localhost:81/wui)
 <p align="center">
-    <img src="./images/12_ais_arlas_wui.png" width="70%">
+    <img src="./images/12_ais_arlas_wui.png" width="100%">
 </p>
 <p align="center" style="font-style: italic;" >
 figure 12:  Visualize in ARLAS-wui
@@ -365,7 +373,7 @@ We now see the boats positions on the map but we can't distinguish the boats! Le
 
 Let's go back to the dashboard builder and edit 'Boats' layer
 <p align="center">
-    <img src="./images/13_ais_edit_layer_boats.png" width="70%">
+    <img src="./images/13_ais_edit_layer_boats.png" width="100%">
 </p>
 <p align="center" style="font-style: italic;" >
 figure 13:  Edit a layer
@@ -375,7 +383,7 @@ figure 13:  Edit a layer
 
 In the Style section, we choose Generated colors option that will automatically generates a hex color from the chosen field values. For our case, we choose `Ship type` field
 <p align="center">
-    <img src="./images/14_ais_edit_layer_boats_style.png" width="70%">
+    <img src="./images/14_ais_edit_layer_boats_style.png" width="100%">
 </p>
 <p align="center" style="font-style: italic;" >
 figure 14:  Setting the positions colors by ship type
@@ -388,7 +396,7 @@ After saving the layer, we can preview it again and see that now we have three s
  - Tanker (purple)
  - Passenger (yellow)
 <p align="center">
-    <img src="./images/15_ais_edit_layer_boats_preview.png" width="70%">
+    <img src="./images/15_ais_edit_layer_boats_preview.png" width="100%">
 </p>
 <p align="center" style="font-style: italic;" >
 figure 15: Preview generated ship types colors
@@ -401,7 +409,7 @@ To answer this question, let's create a dedicated layer!
 
 Before doing that, we will first create a Visualisation set, a space where to organise layers that have to be displayed/hidden together. For instance, the 'Boats' layer is put under the 'All layers' visualisation set
 <p align="center">
-    <img src="./images/16_ais_visualisation_set.png" width="70%">
+    <img src="./images/16_ais_visualisation_set.png" width="100%">
 </p>
 <p align="center" style="font-style: italic;" >
 figure 16: List of visualisation sets
@@ -410,7 +418,7 @@ figure 16: List of visualisation sets
 
 For our speed layer, let's create a new visualisation set called 'Speed'
 <p align="center">
-    <img src="./images/17_ais_add_visualisation_set.png" width="70%">
+    <img src="./images/17_ais_add_visualisation_set.png" width="100%">
 </p>
 <p align="center" style="font-style: italic;" >
 figure 17: Adding a new visualisation set
@@ -419,7 +427,7 @@ figure 17: Adding a new visualisation set
 
 Now let's create our new layer that will allow us to analyse the boats positions speeds.
 <p align="center">
-    <img src="./images/18_ais_layer_altitude.png" width="70%">
+    <img src="./images/18_ais_layer_altitude.png" width="100%">
 </p>
 <p align="center" style="font-style: italic;" >
 figure 18: Adding a new layer for boats positions speed
@@ -430,7 +438,7 @@ In the `Style` section, we interpolate the position colors with interpolation fi
 
 We normalize the SOG values and we choose a color palette
 <p align="center">
-    <img src="./images/19_ais_layer_altitude_style.png" width="70%">
+    <img src="./images/19_ais_layer_altitude_style.png" width="100%">
 </p>
 <p align="center" style="font-style: italic;" >
 figure 19: Interpolating positions colors to positions speed
@@ -439,7 +447,7 @@ figure 19: Interpolating positions colors to positions speed
 
 After saving this layer we can preview it in the Preview tab and start our analyse!
 <p align="center">
-    <img src="./images/20_ais_layer_altitude_preview.png" width="70%">
+    <img src="./images/20_ais_layer_altitude_preview.png" width="100%">
 </p>
 <p align="center" style="font-style: italic;" >
 figure 20: Preview of boats positions according to the speed
@@ -459,7 +467,7 @@ That's why ARLAS proposes a geo-analytic view: we can aggregate the boats positi
 
 Let's create a dedicated layer for boats positions geographical distribution.
 <p align="center">
-    <img src="./images/21_ais_distribution_layer.png" width="70%">
+    <img src="./images/21_ais_distribution_layer.png" width="100%">
 </p>
 <p align="center" style="font-style: italic;" >
 figure 21: Creating a geographical distribution layer
@@ -472,7 +480,7 @@ We will display on the map the grid's cells.
 
 Let's define the style of these cells in `Style` section
 <p align="center">
-    <img src="./images/22_ais_distribution_layer_style.png" width="70%">
+    <img src="./images/22_ais_distribution_layer_style.png" width="100%">
 </p>
 <p align="center" style="font-style: italic;" >
 figure 22: Creating a geographical distribution layer
@@ -483,7 +491,7 @@ We interpolate the cells colors to the number of boats positions in each cell. T
 
 After saving this layer, we can again visualise it and explore where the positions are geographically
 <p align="center">
-    <img src="./images/23_ais_distribution_layer_preview.png" width="70%">
+    <img src="./images/23_ais_distribution_layer_preview.png" width="100%">
 </p>
 <p align="center" style="font-style: italic;" >
 figure 23: Boats positions geographical distribution
@@ -499,7 +507,7 @@ To do so we need to create a histogram. ARLAS proposes to organise all the histo
 
 We can split the analytics board into tabs. Let's create a tab called 'Tracking' where will add our Heading distribution histogram
 <p align="center">
-    <img src="./images/24_ais_tracking_tab.png" width="70%">
+    <img src="./images/24_ais_tracking_tab.png" width="100%">
 </p>
 <p align="center" style="font-style: italic;" >
 figure 24: Creating tab in Analytics board
@@ -508,7 +516,7 @@ figure 24: Creating tab in Analytics board
 
 Once the tab is created, we can add in it a group of widgets. Let's name it 'Heading'
 <p align="center">
-    <img src="./images/25_ais_heading_group.png" width="70%">
+    <img src="./images/25_ais_heading_group.png" width="100%">
 </p>
 <p align="center" style="font-style: italic;" >
 figure 25: Creating a group in Analytics board tab
@@ -517,7 +525,7 @@ figure 25: Creating a group in Analytics board tab
 
 Let's now create our histogram
 <p align="center">
-    <img src="./images/26_ais_histogram.png" width="70%">
+    <img src="./images/26_ais_histogram.png" width="100%">
 </p>
 <p align="center" style="font-style: italic;" >
 figure 26: Choosing a histogram for heading distribution
@@ -529,7 +537,7 @@ We can give a title to the Heading distribution histogram
 For the x-Axis we choose `Heading` field and for the y-Axis we choose `Hits count`: the number of positions in each bucket. 
 
 <p align="center">
-    <img src="./images/27_ais_histogram_data.png" width="70%">
+    <img src="./images/27_ais_histogram_data.png" width="100%">
 </p>
 <p align="center" style="font-style: italic;" >
 figure 27: Defining heading distribution histogram
@@ -538,7 +546,7 @@ figure 27: Defining heading distribution histogram
 
 When we save the histogram we automatically get a preview of it in the analytics board!
 <p align="center">
-    <img src="./images/28_ais_histogram_preview.png" width="70%">
+    <img src="./images/28_ais_histogram_preview.png" width="100%">
 </p>
 <p align="center" style="font-style: italic;" >
 figure 28: Preview heading distribution histogram
@@ -547,7 +555,7 @@ figure 28: Preview heading distribution histogram
 
 We can now save the dashbord again using the 'Disk' icon at the left-bottom of the page and view it ARLAS-wui
 <p align="center">
-    <img src="./images/29_ais_arlas_wui_widget.png" width="70%">
+    <img src="./images/29_ais_arlas_wui_widget.png" width="100%">
 </p>
 <p align="center" style="font-style: italic;" >
 figure 29: Exploring Boats dashboard in ARLAS-wui
