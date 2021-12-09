@@ -30,9 +30,7 @@ You will need :
 
 ## AIS data
 
-
-
-Let's explore some boats position data, provided by __Danish Maritime Authority__.
+Let's explore some boats position data, provided by __Danish Maritime Authority__ on their [website](https://www.dma.dk/SikkerhedTilSoes/Sejladsinformation/AIS/Sider/default.aspx).
 
 This tutorial is based on AIS data emitted from 11/20/2019 to 11/27/2019. We extracted boats positions having the following MMSI :
 
@@ -40,22 +38,7 @@ This tutorial is based on AIS data emitted from 11/20/2019 to 11/27/2019. We ext
  - 265177000
  - 220051000
  - 240305000
-
-First, download all the data you need on the [Danish Maritime Authority FTP](ftp://ftp.ais.dk/ais_data) :
-
-```shell
-# Example for the 11/20/2019
-curl -O ftp://ftp.ais.dk/ais_data/aisdk_20191120.csv
-
-```
-And extract only desired MMSI :
-
-```shell
-cat aisdk_20191120.csv | grep -E "257653000|265177000|220051000|240305000" > ais_data.csv
-
-```
-If you don't want to create your custom extract you can use the one we provide. ( view <a href="#user-content-exploring-ais-data" >Setup</a> section).
-
+ 
 We built a subset named `ais_data.csv`. It contains around 162192 boats positions described with 26 columns.
 
 Example of some columns:
@@ -85,10 +68,10 @@ cd ARLAS-stack-ais-tutorial
 
 ```
 
--  If you didn't download and extract data from ftp server, you can download this csv file we provide :
+-  You can download this csv file we provide :
 
 ```shell
-curl -O -L https://github.com/gisaia/ARLAS-stack-ais-tutorial/raw/develop/data/ais_data.csv
+curl -O -L "https://github.com/gisaia/ARLAS-stack-ais-tutorial/raw/develop/data/ais_data.csv"
 
 ```
 
@@ -98,7 +81,7 @@ curl -O -L https://github.com/gisaia/ARLAS-stack-ais-tutorial/raw/develop/data/a
 ls -l ais_data.csv
 ```
 
-- Download last version of Exploration stack ans unzip it
+- Download last version of Exploration stack and unzip it
 
 ```shell
 (curl -O -L https://github.com/gisaia/ARLAS-Exploration-stack/archive/develop.zip; unzip develop.zip)
@@ -132,7 +115,7 @@ curl -XPUT http://localhost:9200/ais_index/?pretty \
 
 ```
 
-You can check that the index is successfuly created by running the following command
+You can check that the index is successfully created by running the following command
 
 ```shell
 curl -XGET http://localhost:9200/ais_index/_mapping?pretty
@@ -338,7 +321,7 @@ figure 10:  Define search bar
 <br />
 
 
-### Save the dashbord and start exploring in ARLAS-wui
+### Save the dashboard and start exploring in ARLAS-wui
 
 Now we defined :
 
@@ -381,7 +364,7 @@ figure 13:  Edit a layer
 <br />
 
 
-In the Style section, we choose Generated colors option that will automatically generates a hex color from the chosen field values. For our case, we choose `Ship type` field
+In the Style section, we choose Generated colors option that will automatically generate a hex color from the chosen field values. For our case, we choose `Ship type` field
 <p align="center">
     <img src="./images/14_ais_edit_layer_boats_style.png" width="100%">
 </p>
@@ -553,7 +536,7 @@ figure 28: Preview heading distribution histogram
 </p>
 <br />
 
-We can now save the dashbord again using the 'Disk' icon at the left-bottom of the page and view it ARLAS-wui
+We can now save the dashboard again using the 'Disk' icon at the left-bottom of the page and view it ARLAS-wui
 <p align="center">
     <img src="./images/29_ais_arlas_wui_widget.png" width="100%">
 </p>
