@@ -77,7 +77,7 @@ curl -O -L "https://github.com/gisaia/ARLAS-stack-ais-tutorial/raw/develop/data/
 
 - Check that `ais_data.csv` file is downloaded
 
-```
+```shell
 ls -l ais_data.csv
 ```
 
@@ -90,7 +90,7 @@ ls -l ais_data.csv
 
 - Check that the stack is downloaded
 
-```
+```shell
 ls -l ARLAS-Exploration-stack-develop
 ```
 
@@ -171,7 +171,7 @@ The collection references an identifier, a timestamp, and geographical fields wh
 
 - Check that the collection is created using the ARLAS-server `collections/{collection}`
 
-```
+```shell
 curl -X GET "http://localhost:81/server/collections/ais_collection?pretty=true"
 
 ```
