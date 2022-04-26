@@ -122,25 +122,21 @@ curl -XGET http://localhost:9200/ais_index/_mapping?pretty
 
 ```
 
-- Index data in `ais_data.csv` in Elasticsearch. For that, we need Logstash as a data processing pipeline that ingests data in Elasticsearch. So we will download it and untar it:
-
-```shell
-( curl -O https://artifacts.elastic.co/downloads/logstash/logstash-7.4.2.tar.gz ; tar -xzf logstash-7.4.2.tar.gz )
-
-```
-
-- Logstash needs a configuration file (`ais2es.logstash.conf`) that indicates how to transform data from the CSV file and index it in Elasticsearch.
+- Index data that is in `ais_data.csv` in Elasticsearch. For that, we need Logstash as a data processing pipeline that ingests data in Elasticsearch. Logstash needs a configuration file (`ais2es.logstash.conf`) that indicates how to transform data from the CSV file and to index it in Elasticsearch.
 
 ```shell
 curl https://raw.githubusercontent.com/gisaia/ARLAS-stack-ais-tutorial/develop/configs/ais2es.logstash.conf -o ais2es.logstash.conf
 
 ```
     
-- Now we can index the data:
+- Now we will use Logstash in order to apply the data model transformation and to index data in Elasticsearch given the `ais2es.logstash.conf` configuration file with the docker image `docker.elastic.co/logstash/logstash` :
 
 ```shell
-cat ais_data.csv \
-| ./logstash-7.4.2/bin/logstash -f ais2es.logstash.conf
+cat ais_data.csv | docker run -e XPACK_MONITORING_ENABLED=false \
+    --net arlas-exploration-stack-develop_esnet \
+    --env ELASTICSEARCH=elasticsearch:9200  \
+    --env INDEXNAME=ais_index --rm -i \
+    -v ${PWD}/ais2es.logstash.conf:/usr/share/logstash/pipeline/logstash.conf docker.elastic.co/logstash/logstash:7.11.2
 
 ```
 
