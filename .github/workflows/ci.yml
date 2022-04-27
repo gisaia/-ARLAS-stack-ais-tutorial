@@ -1,0 +1,14 @@
+name: CI
+
+on: push
+
+jobs:
+  build:
+    name: Tutorial Testing on Linux
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Testing AIS
+        run: ./scripts/tutorial_test.sh
