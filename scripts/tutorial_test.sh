@@ -38,9 +38,8 @@ echo "Copying the tutorial README"
 cp "../README.md" .
 
 # Creating the file with only the shell lines of the tutorial
-echo > $SHELL_FILE
 echo '#!/bin/bash' > $SHELL_FILE
-echo '' > $SHELL_FILE
+echo '' >> $SHELL_FILE
 chmod +x $SHELL_FILE
 
 # Extracting from the README the shell lines
